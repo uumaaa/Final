@@ -1,16 +1,18 @@
 import Palabra as P
 import re
 
+SIGNOS_PUNTUACION = '[¡!¿?.,;:(){}\[\]"\'\«\»]'
 class Verso:
-    def __init__(self,contenido) -> None:
+    def __init__(self,contenido,signos_puntuacion:dict) -> None:
         self.contenido:list[P.Palabra] = contenido 
+        self.signos_puntuacion = signos_puntuacion
         self.calcular_silabas()
     
     def __str__(self) -> str:
         sb = ''
         for palabra in self.contenido:
             sb = sb + str(palabra.silabas) + " "
-        sb = sb + str(self.silabas_fohologicas) + "-" + str(self.silabas_metricas)
+        sb = sb + f'{self.silabas_fohologicas} - {self.silabas_metricas} - {self.signos_puntuacion}'
         return sb
     
     def calcular_silabas(self):
@@ -22,6 +24,8 @@ class Verso:
                 if len(self.contenido[idx+1].palabra) != 1 and self.contenido[idx+1].palabra[0] in 'yY': # sonido ll
                     continue
                 if self.contenido[idx+1].silaba_tonica + len(self.contenido[idx+1].palabra) == 0 and len(self.contenido[idx+1].palabra) != 1: #segunda vocal tónica
+                    continue
+                if idx in self.signos_puntuacion: # signo que genera pausa
                     continue
                 self.sinalefas[idx] = self.contenido[idx].silabas[-1] + self.contenido[idx+1].silabas[0]
 
@@ -39,7 +43,6 @@ class Verso:
         if self.contenido[-1].silaba_tonica == P.SUPERPROPARAXITONA:
             self.tipo = P.SUPERPROPARAXITONA
             self.silabas_metricas = self.silabas_metricas - 2
-        print(f"sinalefas: {self.sinalefas}")
 
 
 class AnalizadorPoema:
@@ -61,17 +64,18 @@ class AnalizadorPoema:
 
     
     def limpiar_poema(self):
+        self.versos = []
         for verso in self.poema:
-            texto_normalizado = re.sub(r'[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]', ' ', verso)
-            texto_normalizado = re.sub(r'\s+', ' ', texto_normalizado) #remplazo de espacios multiples
-            _ = texto_normalizado.strip()
-            palabras_en_verso = []
-            for palabra in _.split():   
-                p = P.Palabra(palabra)
-                palabras_en_verso.append(p)
-            self.versos.append(Verso(palabras_en_verso))
-
+            verso_normalizado = verso.replace('\n','')
+            signos_puntuacion = {}
+            palabras = []
+            for idx,palabra in enumerate(verso_normalizado.split()):
+                if palabra[-1] in SIGNOS_PUNTUACION:
+                    signos_puntuacion[idx] = palabra[-1]
+                palabras.append(P.Palabra(palabra))
+            self.versos.append(Verso(palabras,signos_puntuacion))
 
 texto = open("poema3.txt",mode="r",encoding="utf-8").readlines()
+print(texto)
 analizador = AnalizadorPoema(texto)
 analizador.analizar()

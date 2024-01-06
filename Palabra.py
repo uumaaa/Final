@@ -34,7 +34,11 @@ class Palabra :
         self.silaba_tonica = None
         self.silabalizar()
     
+    def normalizar_pabra(self):
+        self.palabra = ''.join([caracter for caracter in self.palabra if caracter in CONSONANTES+VOCALES])
+
     def silabalizar(self):
+        self.normalizar_pabra()
         self.dividir_patrones()
         self.eliminar_duplicados()
         self.completar_silabas()
@@ -211,22 +215,22 @@ class Palabra :
     def dividir_patrones(self) -> None:
         def vocal_c_vocal() -> None:
             vcv = re.compile(f'(?=([{VOCALES}][{CONSONANTES}][{VOCALES}]))')
-            coincidencias = vcv.finditer(self.palabra)
-            for c in coincidencias:
+            patrones = vcv.finditer(self.palabra)
+            for c in patrones:
                 self.dict_silabas[c.start()+1] = c.group(1)[1:]
 
         def vocal_cc_vocal() -> None:
             #caso inseparable
             vccv_inseparable = \
             re.compile(f'(?=([{VOCALES}][{CONSONANTES_INSEPARABLES}][{CONSONANTES_LIQUIDAS}][{VOCALES}]|[{VOCALES}][cC][hH][{VOCALES}]))')
-            coincidencias = vccv_inseparable.finditer(self.palabra)
-            for c in coincidencias:
+            patrones = vccv_inseparable.finditer(self.palabra)
+            for c in patrones:
                 self.dict_silabas[c.start()+1] = c.group(1)[1:]
             #caso separable
             vccv_separable = \
             re.compile(f'(?=([{VOCALES}][{CONSONANTES_INSEPARABLES}][{CONSONANTES_NO_LUQUIDAS}][{VOCALES}]|[{VOCALES}][{CONSONANTES_SEPARABLES}][{CONSONANTES_NO_LUQUIDAS}][{VOCALES}]|[{VOCALES}][{CONSONANTES_SEPARABLES}][{CONSONANTES_LIQUIDAS}][{VOCALES}]))')
-            coincidencias = vccv_separable.finditer(self.palabra)
-            for c in coincidencias:
+            patrones = vccv_separable.finditer(self.palabra)
+            for c in patrones:
                 if c.group(1)[1] in 'cC' and c.group(1)[2] in 'hH':
                     continue
                 self.dict_silabas[c.start()] = c.group(1)[:2]
@@ -236,14 +240,14 @@ class Palabra :
             #caso separable
             vcccv_separable = \
                 re.compile(f'(?=([{VOCALES}][Nn][Ss][{CONSONANTES}]+[{VOCALES}]))')
-            coincidencias = vcccv_separable.finditer(self.palabra)
-            for c in coincidencias:
+            patrones = vcccv_separable.finditer(self.palabra)
+            for c in patrones:
                 self.dict_silabas[c.start()] = c.group(1)[:3]
             #caso inseparable
             vcccv_inseparable = \
                 re.compile(f'(?=([{VOCALES}][{CONSONANTES}]+[{CONSONANTES_INSEPARABLES}][{CONSONANTES}][{VOCALES}]))')
-            coincidencias = vcccv_inseparable.finditer(self.palabra)
-            for c in coincidencias:
+            patrones = vcccv_inseparable.finditer(self.palabra)
+            for c in patrones:
                 self.dict_silabas[c.start()+2] = c.group(1)[-3:]
         #busqueda de patrones
         vocal_c_vocal()
@@ -251,4 +255,4 @@ class Palabra :
         vocal_ccc_vocal()
 
 if __name__ == "__main__":
-    print(Palabra("echado").silabas)
+    print(Palabra("!echa???do!").silabas)
