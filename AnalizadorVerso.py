@@ -16,18 +16,20 @@ class Verso:
     def calcular_silabas(self):
         self.silabas_fohologicas = 0
         #busqueda de sinalefas
-        sinalefas = 0
+        self.sinalefas = {}
         for idx in range(len(self.contenido)-1):
             if self.contenido[idx].palabra[-1] in P.VOCALES+'yY' and self.contenido[idx+1].palabra[0] in P.VOCALES+'yYhH':
-                if len(self.contenido[idx+1].palabra) != 1 and self.contenido[idx+1].palabra[0] in 'yY':
+                if len(self.contenido[idx+1].palabra) != 1 and self.contenido[idx+1].palabra[0] in 'yY': # sonido ll
                     continue
-                sinalefas += 1
+                if self.contenido[idx+1].silaba_tonica + len(self.contenido[idx+1].palabra) == 0 and len(self.contenido[idx+1].palabra) != 1: #segunda vocal tónica
+                    continue
+                self.sinalefas[idx] = self.contenido[idx].silabas[-1] + self.contenido[idx+1].silabas[0]
 
         for palabra in self.contenido:
             self.silabas_fohologicas += palabra.numero_silabas
 
 
-        self.silabas_metricas = self.silabas_fohologicas - sinalefas
+        self.silabas_metricas = self.silabas_fohologicas - len(self.sinalefas)
         if self.contenido[-1].silaba_tonica == P.OXITONA or self.contenido[-1].silaba_tonica == P.MONOSILABA:
             self.tipo = P.OXITONA
             self.silabas_metricas = self.silabas_metricas + 1
@@ -37,6 +39,7 @@ class Verso:
         if self.contenido[-1].silaba_tonica == P.SUPERPROPARAXITONA:
             self.tipo = P.SUPERPROPARAXITONA
             self.silabas_metricas = self.silabas_metricas - 2
+        print(f"sinalefas: {self.sinalefas}")
 
 
 class AnalizadorPoema:

@@ -250,4 +250,5 @@ class Palabra :
         vocal_cc_vocal()
         vocal_ccc_vocal()
 
-print(Palabra("echado").silabas)
+if __name__ == "__main__":
+    print(Palabra("echado").silabas)
