@@ -257,4 +257,4 @@ class Palabra :
         vocal_ccc_vocal()
 
 if __name__ == "__main__":
-    print(Palabra("Guadalquivir"))
+    print(Palabra("guitarra"))

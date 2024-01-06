@@ -268,7 +268,11 @@ class Verso:
         sb = ''
         for palabra in self.contenido:
             sb = sb + str(palabra.silabas) + " "
-        sb = sb +\
+        if len(self.sinalefas) != 0:
+            sb += f'\nSINALEFAS:\n'
+            for sinalefa in self.sinalefas:
+                sb += f'{self.sinalefas[sinalefa]} entre palabra {sinalefa+1} y {sinalefa +2} \n'
+        sb += \
             f'\nsílabas fohólogicas:{self.silabas_fohologicas}, sílabas métricas:{self.silabas_metricas}, tipo:{self.obtener_tipo()}'
         return sb
     
@@ -288,8 +292,7 @@ class Verso:
                     continue
                 if idx in self.signos_puntuacion: # signo que genera pausa
                     continue
-                self.sinalefas[idx] = self.contenido[idx].silabas[-1] + self.contenido[idx+1].silabas[0]
-
+                self.sinalefas[idx] = self.contenido[idx].silabas[-1] + '-' + self.contenido[idx+1].silabas[0]
         for palabra in self.contenido:
             self.silabas_fohologicas += palabra.numero_silabas
         self.silabas_metricas = self.silabas_fohologicas - len(self.sinalefas)
