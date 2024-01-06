@@ -103,8 +103,11 @@ class Palabra :
                 if idx >= 1:
                     if \
                     (self.silabas[idx][0] in VOCALES_ALTAS and (self.silabas[idx-1][-1] in VOCALES_MEDIAS 
-                    or self.silabas[idx-1][-1] in VOCALES_BAJAS)) or (self.silabas[idx-1][-1] in VOCALES_ALTAS and (self.silabas[idx][0] in VOCALES_MEDIAS \
-                    or self.silabas[idx][0] in VOCALES_BAJAS)):
+                    or self.silabas[idx-1][-1] in VOCALES_BAJAS)) or (self.silabas[idx-1][-1] in VOCALES_ALTAS and (self.silabas[idx][0] in VOCALES_MEDIAS 
+                    or self.silabas[idx][0] in VOCALES_BAJAS)): #diptongo creciente
+                        silabas_nuevas.append(self.silabas[idx-1] + self.silabas[idx])
+                        anterior = True
+                    elif self.silabas[idx][0] in VOCALES_ALTAS and self.silabas[idx-1][-1] in VOCALES_ALTAS: #diptongo homogeneo
                         silabas_nuevas.append(self.silabas[idx-1] + self.silabas[idx])
                         anterior = True
                     else:
@@ -120,7 +123,6 @@ class Palabra :
                 if silabas_nuevas[idx][0] in 'cCnN' and silabas_nuevas[idx][1] in 'cCnN':
                     silabas_nuevas[idx-1] = silabas_nuevas[idx-1] + silabas_nuevas[idx][0]
                     silabas_nuevas[idx] = silabas_nuevas[idx][1:]
-
         for idx in range(len(silabas_nuevas)): #busqueda de hiatos acentuales
             silaba_interna = silabas_nuevas[idx]
             for idx_caracter in range(len(silaba_interna)):
@@ -255,4 +257,4 @@ class Palabra :
         vocal_ccc_vocal()
 
 if __name__ == "__main__":
-    print(Palabra("!echa???do!").silabas)
+    print(Palabra("Guadalquivir"))
