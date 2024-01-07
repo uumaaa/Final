@@ -191,7 +191,8 @@ class Palabra :
             if len(self.dict_silabas[indice_absoluto]) == 1:
                 self.dict_silabas.pop(indice_absoluto)
             else:
-                self.dict_silabas[indice_absoluto] = self.dict_silabas[indice_absoluto][indice_relativo+1:]
+                self.dict_silabas[indice_absoluto+1] = self.dict_silabas[indice_absoluto][indice_relativo+1:]
+                self.dict_silabas.pop(indice_absoluto)
         indice_inicial = 0
         palabra = ''
         for idx in range(len(self.palabra)):
@@ -273,7 +274,7 @@ class Verso:
             for sinalefa in self.sinalefas:
                 sb += f'{self.sinalefas[sinalefa]} entre palabra {sinalefa+1} y {sinalefa +2} \n'
         sb += \
-            f'\nsílabas fohólogicas:{self.silabas_fohologicas}, sílabas métricas:{self.silabas_metricas}, tipo:{self.obtener_tipo()}'
+            f'\nsilabas fohologicas:{self.silabas_fohologicas}, silabas metricas:{self.silabas_metricas}, tipo:{self.obtener_tipo()}'
         return sb
     
     def obtener_tipo(self):
@@ -316,11 +317,11 @@ class Poema:
         self.analizar()
 
     def __str__(self) -> str:
-        sb = f'poema:\n{"".join(self.poema)}\n          ANALÍSIS:\nVERSOS:'
+        sb = f'ANALISIS:\nVERSOS:{len(self.versos)}'
         for verso in self.versos:
             sb+= f'\n {verso}'
         
-        sb += f'\nPOEMA:\nsílabas fohologicas:{self.silabas_fohologicas}, sílabas métricas:{self.silabas_metricas}'
+        sb += f'\nPOEMA:\nsilabas fohologicas:{self.silabas_fohologicas}, silabas metricas:{self.silabas_metricas}'
         sb += '\nRIMAS:\n'
         for rima,tipo in self.rimas.items():
             sb += f'rima {tipo[0]} entre versos {tipo[1]} con sonido {rima}\n'
@@ -337,7 +338,6 @@ class Poema:
         for verso in self.versos:
             self.silabas_metricas += verso.silabas_metricas
             self.silabas_fohologicas += verso.silabas_fohologicas
-        
     def buscar_rimas(self):
         for idx in range(len(self.versos)-2):
             # rima consonante
@@ -345,11 +345,12 @@ class Poema:
             b= self.versos[idx+2].contenido[-1].rima_consonante()
             if(a == b):
                 self.rimas[a] = ('consonante',(idx,idx+2))
-                continue # si es consonante también es asonante
+                continue # si es consonante tambien es asonante
             a = self.versos[idx].contenido[-1].rima_asonante()
             b= self.versos[idx+2].contenido[-1].rima_asonante()
             if(a == b):
                 self.rimas[a] = ('asonante',(idx,idx+2))
+
     
     def limpiar_poema(self):
         self.versos = []
@@ -380,3 +381,4 @@ print(poema)
 texto = open("poema4.txt",mode="r",encoding="utf-8").readlines()
 poema = Poema(texto)
 print(poema)
+
