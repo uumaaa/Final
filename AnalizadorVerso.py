@@ -146,6 +146,7 @@ class Palabra :
                         silaba = silabas_nuevas.pop(idx)
                         silabas_nuevas.insert(idx,silaba[idx_caracter:])
                         silabas_nuevas.insert(idx,silaba[:idx_caracter])
+            
         indices_eliminar = []
         for idx in range(len(silabas_nuevas)-1): # unión de ll rr 
                 if silabas_nuevas[idx][-1] in 'lLrR' and silabas_nuevas[idx+1][0] in 'lLrR':
@@ -165,6 +166,9 @@ class Palabra :
                     silabas_nuevas[idx-1] = silabas_nuevas[idx-1] + silabas_nuevas[idx]
                     indices_eliminar.append(idx)
                 if len(silabas_nuevas[idx]) == 2 and silabas_nuevas[idx][0] in CONSONANTES and silabas_nuevas[idx][1] in CONSONANTES and silabas_nuevas[idx-1][-1] in VOCALES: #union izq
+                    silabas_nuevas[idx-1] = silabas_nuevas[idx-1] + silabas_nuevas[idx]
+                    indices_eliminar.append(idx)
+                if len(silabas_nuevas[idx-1]) == 2 and silabas_nuevas[idx-1][0] in CONSONANTES and silabas_nuevas[idx-1][1] in CONSONANTES and silabas_nuevas[idx][0] in VOCALES: #union der
                     silabas_nuevas[idx-1] = silabas_nuevas[idx-1] + silabas_nuevas[idx]
                     indices_eliminar.append(idx)
                 if len(silabas_nuevas[idx-1]) == 1 and silabas_nuevas[idx-1] in CONSONANTES and silabas_nuevas[idx][0] in VOCALES: #union derecha
@@ -247,12 +251,16 @@ class Palabra :
                 re.compile(f'(?=([{VOCALES}][Nn][Ss][{CONSONANTES}]+[{VOCALES}]))')
             patrones = vcccv_separable.finditer(self.palabra)
             for c in patrones:
+                print(c.group(1))
                 self.dict_silabas[c.start()] = c.group(1)[:3]
             #caso inseparable
             vcccv_inseparable = \
                 re.compile(f'(?=([{VOCALES}][{CONSONANTES}]+[{CONSONANTES_INSEPARABLES}][{CONSONANTES}][{VOCALES}]))')
             patrones = vcccv_inseparable.finditer(self.palabra)
             for c in patrones:
+                if c.group(1)[1] in 'nN' and c.group(1)[2] in 'sS':
+                    continue
+    
                 self.dict_silabas[c.start()+2] = c.group(1)[-3:]
         #busqueda de patrones
         vocal_c_vocal()
@@ -364,21 +372,7 @@ class Poema:
                 palabras.append(Palabra(palabra))
             self.versos.append(Verso(palabras,signos_puntuacion))
 
-texto = open("poema3.txt",mode="r",encoding="utf-8").readlines()
-poema = Poema(texto)
-print(poema)
-
 
 texto = open("poema.txt",mode="r",encoding="utf-8").readlines()
 poema = Poema(texto)
 print(poema)
-
-
-texto = open("poema2.txt",mode="r",encoding="utf-8").readlines()
-poema = Poema(texto)
-print(poema)
-
-texto = open("poema4.txt",mode="r",encoding="utf-8").readlines()
-poema = Poema(texto)
-print(poema)
-
